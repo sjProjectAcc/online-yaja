@@ -64,3 +64,21 @@ export function ceilingTileTexture() {
     ctx.strokeRect(0, 0, s, s)
   })
 }
+
+// 건물 외벽 한 칸(창문 1개 x 1층). 반복해서 붙이면 창문이 줄지어 난 건물이 된다.
+// band: 창 아래 띠 색 (벽돌 건물의 밝은 띠). 없으면 생략.
+export function facadeTexture(wall, glass = '#5b6f7c', band) {
+  return make(128, (ctx, s) => {
+    ctx.fillStyle = wall
+    ctx.fillRect(0, 0, s, s)
+    if (band) {
+      ctx.fillStyle = band
+      ctx.fillRect(s * 0.18, s * 0.66, s * 0.64, s * 0.2)
+    }
+    ctx.fillStyle = '#e8e6df'
+    ctx.fillRect(s * 0.2, s * 0.22, s * 0.6, s * 0.46)
+    ctx.fillStyle = glass
+    ctx.fillRect(s * 0.23, s * 0.25, s * 0.26, s * 0.4)
+    ctx.fillRect(s * 0.51, s * 0.25, s * 0.26, s * 0.4)
+  })
+}

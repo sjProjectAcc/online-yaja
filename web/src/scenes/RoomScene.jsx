@@ -1,15 +1,17 @@
 import { useMemo } from 'react'
-import { OrbitControls, Grid, Text } from '@react-three/drei'
+import { OrbitControls, Text } from '@react-three/drei'
 import spec from '../map/classroom.json'
 import Classroom from '../models/Classroom'
 import Box, { LookContext } from '../models/Box'
 import { C } from '../models/palette'
 import { terrazzoTexture, ceilingTileTexture } from '../models/proceduralTextures'
+import floor from '../map/floor.json'
+import Outside from '../models/Outside'
 import WalkControls from './WalkControls'
 
 // 지금 만드는 범위: 2-7반 교실 하나 + 그 앞 복도 구간.
 // 2-7은 B타입이라 칠판 -x, 사물함 +x, 복도 -z, 창문 +z 로 놓인다.
-const ROOM = { label: '2-7', variant: 'B' }
+const ROOM = { label: '2-7', variant: 'B', mapX: 20, mapZ: 4 }
 const W = spec.width
 const D = spec.depth
 const H = spec.height
@@ -17,9 +19,9 @@ const CORRIDOR = 3 // 복도 폭 (실측)
 const corridorZ = -(D / 2 + CORRIDOR / 2)
 const doorX = W / 2 - spec.door.fromEnd // 뒷문 중심
 
-export const roomCamera = { position: [7, 8.5, -9.5], fov: 50, far: 200 }
+export const roomCamera = { position: [7, 8.5, -9.5], fov: 50, far: 500 }
 // 걷기 시작: 뒷문 앞 복도에서 교실 쪽을 본다 (눈높이 1.0m)
-export const roomWalkCamera = { position: [doorX, 1.0, -(D / 2 + 2.3)], fov: 70, near: 0.05, far: 200 }
+export const roomWalkCamera = { position: [doorX, 1.0, -(D / 2 + 2.3)], fov: 70, near: 0.05, far: 500 }
 
 // 문 옆에 복도로 튀어나온 반 팻말
 function ClassSign() {
@@ -42,7 +44,7 @@ export default function RoomScene({ walk = false }) {
 
   return (
     <LookContext.Provider value={look}>
-      {walk && <color attach="background" args={['#cfe3f2']} />}
+      <color attach="background" args={['#cfe3f2']} />
       <ambientLight intensity={walk ? 0.75 : 0.9} />
       <hemisphereLight args={['#ffffff', '#b9b4a8', 0.45]} />
       {/* 창(+z) 쪽에서 들어오는 햇빛 */}
@@ -61,6 +63,10 @@ export default function RoomScene({ walk = false }) {
       />
 
       <Classroom variant={ROOM.variant} detail ceiling={walk} />
+      {/* 창밖 풍경: 층 배치에서 2-7의 중심(지도 x=20, z=4)이 이 화면의 원점에 오도록 옮긴다 */}
+      <group position={[-ROOM.mapX, 0, ROOM.mapZ]}>
+        <Outside backFrame={floor.frames?.back} />
+      </group>
       <ClassSign />
 
       {/* 교실 앞 복도 구간. 걸을 때는 맞은편 벽·양 끝·천장으로 닫는다 */}
@@ -83,7 +89,6 @@ export default function RoomScene({ walk = false }) {
         <WalkControls yaw={Math.PI} />
       ) : (
         <>
-          <Grid position={[0, -0.11, 0]} cellSize={1} sectionSize={4} cellColor="#b4bcc2" sectionColor="#7c868e" fadeDistance={50} infiniteGrid />
           <OrbitControls makeDefault target={[0, 0.8, -0.5]} maxPolarAngle={Math.PI / 2.02} minDistance={0.5} maxDistance={40} />
         </>
       )}

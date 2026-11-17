@@ -99,11 +99,13 @@ function WindowDetails() {
       <Deco size={[W - 2 * IN, 0.04, 0.16]} position={[0, sill, WZ + 0.08]} color="#cfd2d4" />
       {centersX.map((cx) => (
         <group key={cx}>
-          {/* 반쯤 내린 롤 블라인드 */}
-          <Deco size={[w, h * 0.55, 0.015]} position={[cx, sill + h - (h * 0.55) / 2, WZ + 0.06]} color="#e9e2cc" />
-          <Deco size={[w, 0.03, 0.03]} position={[cx, sill + h * 0.45, WZ + 0.06]} color="#cfc7ae" />
-          {/* 추락 방지 난간 */}
-          <Deco size={[w, 0.03, 0.03]} position={[cx, sill + 0.3, WZ + 0.05]} color="#b9bdc1" />
+          {/* 조금만 내린 롤 블라인드 (창밖이 보이도록) */}
+          <Deco size={[w, h * 0.22, 0.015]} position={[cx, sill + h - (h * 0.22) / 2, WZ + 0.06]} color="#e9e2cc" />
+          <Deco size={[w, 0.03, 0.03]} position={[cx, sill + h * 0.78, WZ + 0.06]} color="#cfc7ae" />
+          {/* 추락 방지 난간 봉 2줄 */}
+          {[0.12, 0.38].map((y) => (
+            <Deco key={y} size={[w, 0.03, 0.03]} position={[cx, sill + y, WZ + 0.05]} color="#b9bdc1" />
+          ))}
         </group>
       ))}
     </>

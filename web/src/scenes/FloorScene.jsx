@@ -1,9 +1,10 @@
 import { createContext, useContext, useMemo } from 'react'
 import { DoubleSide, Shape } from 'three'
-import { OrbitControls, Grid, Text, Billboard } from '@react-three/drei'
+import { OrbitControls, Text, Billboard } from '@react-three/drei'
 import floor from '../map/floor.json'
 import Classroom from '../models/Classroom'
 import { Shelter, RestArea, SinkAlcove } from '../models/Lounges'
+import Outside from '../models/Outside'
 import WalkControls from './WalkControls'
 
 const H = floor.height
@@ -376,7 +377,7 @@ export const planCamera = { position: [0, 135, 0.1], fov: 40, far: 600 }
 // 걸어 다니기 시작 위치: 엘리베이터 앞 복도에서 2-2 쪽을 본다
 const EYE_HEIGHT = 1.0 // 캐릭터 눈높이 (처음 값 1.5m의 2/3, 사용자 요청)
 const WALK_START = [11 - CENTER_X, EYE_HEIGHT, -9.5 + CENTER_Z]
-export const walkCamera = { position: WALK_START, fov: 70, near: 0.05, far: 300 }
+export const walkCamera = { position: WALK_START, fov: 70, near: 0.05, far: 500 }
 
 const mainSpaces = floor.spaces.filter((s) => !s.frame)
 
@@ -384,7 +385,7 @@ const mainSpaces = floor.spaces.filter((s) => !s.frame)
 export default function FloorScene({ walk = false }) {
   return (
     <WalkContext.Provider value={walk}>
-      {walk && <color attach="background" args={['#cfe3f2']} />}
+      <color attach="background" args={['#cfe3f2']} />
       <ambientLight intensity={walk ? 1.0 : 0.8} />
       <directionalLight
         position={[30, 60, 40]}
@@ -399,6 +400,8 @@ export default function FloorScene({ walk = false }) {
       />
 
       <group position={[-CENTER_X, 0, CENTER_Z]}>
+        {/* 창밖: 운동장, 건너편 건물, 우리 건물의 아래층 */}
+        <Outside backFrame={floor.frames?.back} />
         {mainSpaces.map((space) => (
           <Space key={space.id} space={space} />
         ))}
@@ -428,9 +431,7 @@ export default function FloorScene({ walk = false }) {
         <WalkControls toWorld={(x, z) => [x - CENTER_X, -z + CENTER_Z]} />
       ) : (
         <>
-          {/* 1칸 = 1m 격자 */}
-          <Grid position={[0, -0.11, 0]} cellSize={1} sectionSize={8} cellColor="#b4bcc2" sectionColor="#7c868e" fadeDistance={220} infiniteGrid />
-          <OrbitControls makeDefault target={[0, 0, 0]} maxPolarAngle={Math.PI / 2.05} minDistance={3} maxDistance={220} />
+          <OrbitControls makeDefault target={[0, 0, 0]} maxPolarAngle={Math.PI / 2.05} minDistance={3} maxDistance={260} />
         </>
       )}
     </WalkContext.Provider>
