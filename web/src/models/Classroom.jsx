@@ -4,6 +4,7 @@ import { useContext, useLayoutEffect, useMemo, useRef } from 'react'
 import { Color, Matrix4, Quaternion, Vector3 } from 'three'
 import DeskSet, { deskParts } from './Desk'
 import Box, { LookContext } from './Box'
+import ClassroomDetails from './ClassroomDetails'
 
 const W = spec.width // x: 칠판(-x) ↔ 사물함(+x)
 const D = spec.depth // z: 창문(-z) ↔ 복도(+z)
@@ -65,7 +66,7 @@ function InstancedSeats() {
 
 function Seats() {
   const look = useContext(LookContext)
-  if (!look) return <InstancedSeats />
+  if (!look?.wood) return <InstancedSeats />
   // 사진 질감 모드: 의자·책상에 나무 질감을 입혀야 해서 상자를 하나씩 그린다
   return seatPositions().map((s) => (
     <group key={s.no} position={[s.x, 0, s.z]} rotation={[0, Math.PI / 2, 0]}>
@@ -139,9 +140,26 @@ function CorridorWall() {
       {/* 문 + 문 위 고창 */}
       {doorXs.map((x) => (
         <group key={x}>
-          <Box size={[doorW, doorH, 0.05]} position={[x, doorH / 2, z]} color={C.wood} tex="door" passable />
-          <Glass size={[0.12, 0.7, 0.06]} position={[x - doorW / 4, 1.45, z]} passable />
-          <Box size={[doorW, H - doorH, WALL_T]} position={[x, (H + doorH) / 2, z]} color={C.woodDark} tex="wood" tile={WOOD_TILE} />
+          {/* 문짝 2장 (미닫이): 세로 유리창과 손잡이 */}
+          {[-1, 1].map((s) => (
+            <group key={s}>
+              <Box size={[doorW / 2 - 0.02, doorH, 0.05]} position={[x + (s * doorW) / 4, doorH / 2, z]} color={C.wood} tex="door" passable />
+              <Glass size={[0.12, 0.7, 0.06]} position={[x + (s * doorW) / 4, 1.45, z]} passable />
+              <Box size={[0.03, 0.35, 0.1]} position={[x + s * 0.09, 1.0, z]} color={C.metal} shadow={false} passable />
+            </group>
+          ))}
+          {/* 문 위 고창: 나무 틀 + 유리 */}
+          <Glass size={[doorW, H - doorH, 0.02]} position={[x, (H + doorH) / 2, z]} />
+          {[doorH + 0.03, H - 0.03].map((y) => (
+            <Box key={y} size={[doorW, 0.06, WALL_T]} position={[x, y, z]} color={C.wood} tex="wood" tile={WOOD_TILE} />
+          ))}
+          {[-1, 0, 1].map((s) => (
+            <Box key={s} size={[0.06, H - doorH, WALL_T]} position={[x + (s * doorW) / 2, (H + doorH) / 2, z]} color={C.wood} tex="wood" tile={WOOD_TILE} />
+          ))}
+          {/* 문틀 */}
+          {[-1, 1].map((s) => (
+            <Box key={s} size={[0.06, doorH, WALL_T]} position={[x + s * (doorW / 2 + 0.03), doorH / 2, z]} color={C.wood} tex="wood" tile={WOOD_TILE} />
+          ))}
         </group>
       ))}
       {/* 가운데: 아래 흰 판, 위 나무 창틀과 유리 */}
@@ -192,8 +210,9 @@ function WindowWall() {
 
 // 교실 템플릿 1개. 원점은 교실 바닥 한가운데.
 // 천장 + LED 등 (안에서 볼 때만 쓴다. 위에서 내려다보면 교실을 가린다)
-function Ceiling() {
-  const lights = [-2.4, 0, 2.4].flatMap((x) => [-2, 2].map((z) => [x, z]))
+function Ceiling({ detail }) {
+  // 세부 모드에서는 ClassroomDetails가 등을 따로 그린다
+  const lights = detail ? [] : [-2.4, 0, 2.4].flatMap((x) => [-2, 2].map((z) => [x, z]))
   return (
     <>
       <Box size={[W, 0.05, D]} position={[0, H + 0.025, 0]} color={C.white} tex="ceiling" tile={[0.6, 0.39]} shadow={false} unlit />
@@ -208,11 +227,13 @@ function Ceiling() {
 }
 
 // variant: 'A' = 칠판을 볼 때 문이 왼쪽·창이 오른쪽 (2-1, 2-14), 'B' = 좌우 반대 (나머지 반)
-export default function Classroom({ ceiling = false, variant = 'A' }) {
+// detail: 세부 소품까지 그린다 (교실 하나만 볼 때)
+export default function Classroom({ ceiling = false, variant = 'A', detail = false }) {
   return (
     <group scale={[1, 1, variant === 'B' ? -1 : 1]}>
       <Box size={[W, 0.1, D]} position={[0, -0.05, 0]} color={C.floor} tex="floor" tile={[0.45, 0.45]} shadow={false} />
-      {ceiling && <Ceiling />}
+      {ceiling && <Ceiling detail={detail} />}
+      {detail && <ClassroomDetails ceiling={ceiling} />}
       <FrontWall />
       <BackWall />
       <CorridorWall />

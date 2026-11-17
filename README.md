@@ -15,13 +15,17 @@ npm run dev
 
 브라우저에서 http://localhost:5173 을 연다.
 
+## 지금 범위
+
+2-7반 교실 하나를 먼저 디테일하게 만든다. 2학년 층 전체는 추후 구현 예정이며, 코드와 배치 데이터는 그대로 남아 있다.
+
 ## 구조
 
 - `web/` — 화면 (React + Vite + React Three Fiber)
-- `web/src/map/floor.json` — 층 배치 데이터 (미터 단위). 방을 옮기거나 치수를 고칠 때는 이 파일만 수정한다.
-- `web/src/map/classroom.json` — 교실 템플릿 치수 (책상, 사물함, 문, 창문 등)
-- `web/src/models/` — 교실과 가구 모델. 색은 `palette.js`에 모여 있다.
-- `web/src/scenes/` — 화면 두 개: 층 전체(`#floor`), 교실 작업실(`#classroom`)
+- `web/src/scenes/RoomScene.jsx` — 2-7 교실 화면 (`#room` 위에서 보기, `#roomwalk` 걸어 다니기)
+- `web/src/models/Classroom.jsx`, `ClassroomDetails.jsx` — 교실 모델과 세부 소품. 색은 `palette.js`, 코드로 그린 바닥·천장 무늬는 `proceduralTextures.js`
+- `web/src/map/classroom.json` — 교실 치수 (책상, 사물함, 문, 창문 등)
+- `web/src/scenes/FloorScene.jsx`, `web/src/map/floor.json` — 층 전체 (추후 구현 예정: `#floor`, `#plan`, `#walk`)
 - `.github/workflows/deploy.yml` — `main`에 올리면 GitHub Pages로 자동 배포
 
 학교 사진은 저장소에 올리지 않는다 (`.gitignore` 참고).

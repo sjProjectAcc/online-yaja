@@ -15,9 +15,10 @@ const KEYS = {
 // 눈높이에서 걸어 다니기: WASD/방향키로 이동, 화면을 끌어서 둘러본다.
 // 벽과 가구는 막히고, 문짝(userData.noCollide)은 그대로 통과한다.
 // 주소 끝에 @x,z,방향 을 붙이면 그 자리에서 시작한다 (지도 좌표. 방향은 도 단위, 0 = 뒤쪽, 90 = 2-2 쪽)
-export default function WalkControls({ toWorld }) {
+// yaw: 처음 바라보는 방향 (라디안. 0 = -z, -π/2 = +x)
+export default function WalkControls({ toWorld = (x, z) => [x, z], yaw = -Math.PI / 2 }) {
   const { camera, gl, scene } = useThree()
-  const look = useRef({ yaw: -Math.PI / 2, pitch: 0 }) // 처음에 +x(2-2 쪽)를 본다
+  const look = useRef({ yaw, pitch: 0 })
   const pressed = useRef(new Set())
   const ray = useMemo(() => new Raycaster(), [])
 
