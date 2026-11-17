@@ -20,8 +20,8 @@ const corridorZ = -(D / 2 + CORRIDOR / 2)
 const doorX = W / 2 - spec.door.fromEnd // 뒷문 중심
 
 export const roomCamera = { position: [7, 8.5, -9.5], fov: 50, far: 500 }
-// 걷기 시작: 뒷문 앞 복도에서 교실 쪽을 본다 (눈높이 1.0m)
-export const roomWalkCamera = { position: [doorX, 1.0, -(D / 2 + 2.3)], fov: 70, near: 0.05, far: 500 }
+// 걷기 시작: 뒷문 앞 복도에서 교실 쪽을 본다 (눈높이 1.3m)
+export const roomWalkCamera = { position: [doorX, 1.3, -(D / 2 + 2.3)], fov: 70, near: 0.05, far: 500 }
 
 // 문 옆에 복도로 튀어나온 반 팻말
 function ClassSign() {
