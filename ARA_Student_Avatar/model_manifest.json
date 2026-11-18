@@ -1,0 +1,220 @@
+{
+  "coordinate_system": "Y up, +Z front, meters",
+  "pose": "neutral A-pose; not skinned / no animations",
+  "assembly": {
+    "core": "core.glb",
+    "tops": [
+      "top_shirt.glb",
+      "top_hoodie.glb",
+      "top_blazer.glb",
+      "top_track_jacket.glb",
+      "top_sports_tshirt.glb"
+    ],
+    "bottoms": [
+      "bottom_uniform.glb",
+      "bottom_track.glb",
+      "bottom_shorts.glb"
+    ]
+  },
+  "files": [
+    {
+      "file": "core.glb",
+      "triangles": 1870,
+      "mesh_groups": 12,
+      "parts": [
+        "core"
+      ]
+    },
+    {
+      "file": "top_shirt.glb",
+      "triangles": 748,
+      "mesh_groups": 9,
+      "parts": [
+        "top_shirt"
+      ]
+    },
+    {
+      "file": "top_hoodie.glb",
+      "triangles": 576,
+      "mesh_groups": 11,
+      "parts": [
+        "top_hoodie"
+      ]
+    },
+    {
+      "file": "top_blazer.glb",
+      "triangles": 1433,
+      "mesh_groups": 17,
+      "parts": [
+        "top_blazer"
+      ]
+    },
+    {
+      "file": "top_track_jacket.glb",
+      "triangles": 1024,
+      "mesh_groups": 13,
+      "parts": [
+        "top_track_jacket"
+      ]
+    },
+    {
+      "file": "top_sports_tshirt.glb",
+      "triangles": 904,
+      "mesh_groups": 10,
+      "parts": [
+        "top_sports_tshirt"
+      ]
+    },
+    {
+      "file": "bottom_uniform.glb",
+      "triangles": 308,
+      "mesh_groups": 6,
+      "parts": [
+        "bottom_uniform"
+      ]
+    },
+    {
+      "file": "bottom_track.glb",
+      "triangles": 544,
+      "mesh_groups": 6,
+      "parts": [
+        "bottom_track"
+      ]
+    },
+    {
+      "file": "bottom_shorts.glb",
+      "triangles": 744,
+      "mesh_groups": 11,
+      "parts": [
+        "bottom_shorts"
+      ]
+    },
+    {
+      "file": "preset_school_uniform.glb",
+      "triangles": 3611,
+      "mesh_groups": 35,
+      "parts": [
+        "core",
+        "top_blazer",
+        "bottom_uniform"
+      ]
+    },
+    {
+      "file": "preset_shirt_uniform.glb",
+      "triangles": 2926,
+      "mesh_groups": 27,
+      "parts": [
+        "core",
+        "top_shirt",
+        "bottom_uniform"
+      ]
+    },
+    {
+      "file": "preset_hoodie_uniform.glb",
+      "triangles": 2754,
+      "mesh_groups": 29,
+      "parts": [
+        "core",
+        "top_hoodie",
+        "bottom_uniform"
+      ]
+    },
+    {
+      "file": "preset_sports_winter.glb",
+      "triangles": 3438,
+      "mesh_groups": 31,
+      "parts": [
+        "core",
+        "top_track_jacket",
+        "bottom_track"
+      ]
+    },
+    {
+      "file": "preset_sports_summer.glb",
+      "triangles": 3518,
+      "mesh_groups": 33,
+      "parts": [
+        "core",
+        "top_sports_tshirt",
+        "bottom_shorts"
+      ]
+    }
+  ],
+  "textures": "vertex colors; no external image textures",
+  "optimized": {
+    "location": "optimized/",
+    "description": "same geometry, vertex colors and shape; all pieces merged to 1 mesh per GLB, recommended for static multiplayer characters",
+    "files": {
+      "bottom_shorts.glb": {
+        "triangles": 744,
+        "mesh_groups": 1,
+        "size_kb": 16.1
+      },
+      "bottom_track.glb": {
+        "triangles": 544,
+        "mesh_groups": 1,
+        "size_kb": 12.1
+      },
+      "bottom_uniform.glb": {
+        "triangles": 308,
+        "mesh_groups": 1,
+        "size_kb": 7.2
+      },
+      "core.glb": {
+        "triangles": 1870,
+        "mesh_groups": 1,
+        "size_kb": 39.2
+      },
+      "preset_hoodie_uniform.glb": {
+        "triangles": 2754,
+        "mesh_groups": 1,
+        "size_kb": 57.4
+      },
+      "preset_school_uniform.glb": {
+        "triangles": 3611,
+        "mesh_groups": 1,
+        "size_kb": 75.0
+      },
+      "preset_shirt_uniform.glb": {
+        "triangles": 2926,
+        "mesh_groups": 1,
+        "size_kb": 60.7
+      },
+      "preset_sports_summer.glb": {
+        "triangles": 3518,
+        "mesh_groups": 1,
+        "size_kb": 75.5
+      },
+      "preset_sports_winter.glb": {
+        "triangles": 3438,
+        "mesh_groups": 1,
+        "size_kb": 74.1
+      },
+      "top_blazer.glb": {
+        "triangles": 1433,
+        "mesh_groups": 1,
+        "size_kb": 30.5
+      },
+      "top_hoodie.glb": {
+        "triangles": 576,
+        "mesh_groups": 1,
+        "size_kb": 12.9
+      },
+      "top_shirt.glb": {
+        "triangles": 748,
+        "mesh_groups": 1,
+        "size_kb": 16.2
+      },
+      "top_sports_tshirt.glb": {
+        "triangles": 904,
+        "mesh_groups": 1,
+        "size_kb": 22.3
+      },
+      "top_track_jacket.glb": {
+        "triangles": 1024,
+        "mesh_groups": 1,
+        "size_kb": 24.8
+      }
+    }
+  }
+}

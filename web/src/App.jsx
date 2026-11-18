@@ -3,27 +3,30 @@ import { Canvas } from '@react-three/fiber'
 import RoomScene, { RoomWalkScene, roomCamera, roomWalkCamera } from './scenes/RoomScene'
 import FloorScene, { WalkScene, floorCamera, planCamera, walkCamera } from './scenes/FloorScene'
 import PhotoScene, { photoCamera } from './scenes/PhotoScene'
+import { OUTFITS, joinRoom, leaveRoom, setMyProfile, useRoom } from './net/room'
 
 const WALK_HINT = 'WASD·방향키로 이동 / 화면을 끌어서 둘러보기 / Shift 달리기 / 문은 그대로 통과'
+const ROOM_ID = '2-7'
 
-// 층 전체와 2-7 교실(디테일 작업용) 화면을 같이 둔다. 창밖 풍경은 두 쪽이 같은 모델을 쓴다.
-// minor: true 인 화면은 아래 줄의 작은 버튼으로 나온다.
+// 지금 범위는 ROADMAP-2-7.md 의 2-7반 파일럿: 2-7 교실 + 앞 복도.
+// net: true 인 화면에 들어가면 같은 방 사람들과 P2P로 연결된다.
+// minor: true 인 화면(층 전체 등)은 보관용으로 아래 줄의 작은 버튼으로 나온다.
 const VIEWS = {
-  floor: { label: '층 전체', Scene: FloorScene, camera: floorCamera },
-  plan: { label: '평면 보기', Scene: FloorScene, camera: planCamera }, // 바로 위에서 내려다봄 (도면과 비교용)
-  walk: { label: '층 걷기', Scene: WalkScene, camera: walkCamera, hint: WALK_HINT },
-  room: { label: '2-7 교실', Scene: RoomScene, camera: roomCamera },
-  roomwalk: { label: '2-7 걷기', Scene: RoomWalkScene, camera: roomWalkCamera, hint: WALK_HINT },
+  room: { label: '2-7 교실', Scene: RoomScene, camera: roomCamera, net: true },
+  roomwalk: { label: '2-7 걷기', Scene: RoomWalkScene, camera: roomWalkCamera, hint: WALK_HINT, net: true },
+  floor: { label: '층 전체', Scene: FloorScene, camera: floorCamera, minor: true },
+  plan: { label: '평면 보기', Scene: FloorScene, camera: planCamera, minor: true }, // 바로 위에서 내려다봄 (도면과 비교용)
+  walk: { label: '층 걷기', Scene: WalkScene, camera: walkCamera, hint: WALK_HINT, minor: true },
   // 사진 질감 예시는 학교 사진에서 잘라낸 이미지가 필요해서, 이 컴퓨터의 개발 서버에서만 보인다 (공개 사이트에는 없음)
   ...(import.meta.env.DEV
     ? { photo: { label: '사진 질감 예시', Scene: PhotoScene, camera: photoCamera, flat: true, minor: true } } // flat: 톤 보정 끔
     : {}),
 }
 
-// 주소 예: #room, #roomwalk, #walk@41,9.5,0 (@ 뒤는 층 걷기 시작 위치: 지도 x, z, 바라보는 방향)
+// 주소 예: #room, #roomwalk@1.9,3.45,180 (@ 뒤는 걷기 시작 위치와 바라보는 방향)
 const viewFromHash = () => {
   const id = location.hash.slice(1).split('@')[0]
-  return VIEWS[id] ? id : 'floor'
+  return VIEWS[id] ? id : 'room'
 }
 
 function Tab({ id, view, small }) {
@@ -46,6 +49,54 @@ function Tab({ id, view, small }) {
   )
 }
 
+// 오른쪽 위: 접속 상태와 내 이름·착장
+function NetPanel() {
+  const { mode, peers, profile } = useRoom()
+  const box = {
+    position: 'fixed',
+    top: 12,
+    right: 12,
+    padding: '10px 12px',
+    borderRadius: 10,
+    fontSize: 13,
+    color: '#1f2933',
+    background: 'rgba(255,255,255,0.92)',
+    boxShadow: '0 1px 3px rgba(0,0,0,0.2)',
+    display: 'flex',
+    flexDirection: 'column',
+    gap: 6,
+    width: 190,
+  }
+  return (
+    <div style={box}>
+      <div style={{ fontWeight: 600 }}>
+        {mode === 'supabase' ? '온라인' : '로컬 테스트'} · 같이 있는 사람 {peers.length}명
+      </div>
+      {mode === 'local' && <div style={{ fontSize: 11, color: '#52606d' }}>Supabase 키가 없어서 이 브라우저의 다른 탭하고만 연결됩니다</div>}
+      <input
+        value={profile.name}
+        maxLength={12}
+        onChange={(e) => setMyProfile({ name: e.target.value })}
+        style={{ padding: '4px 6px', borderRadius: 6, border: '1px solid #cbd2d9', fontSize: 13 }}
+      />
+      <select
+        value={profile.outfit}
+        onChange={(e) => setMyProfile({ outfit: e.target.value })}
+        style={{ padding: '4px 6px', borderRadius: 6, border: '1px solid #cbd2d9', fontSize: 13 }}
+      >
+        {Object.entries(OUTFITS).map(([id, o]) => (
+          <option key={id} value={id}>
+            {o.label}
+          </option>
+        ))}
+      </select>
+      {peers.length > 0 && (
+        <div style={{ fontSize: 12, color: '#52606d' }}>{peers.map((p) => p.profile?.name ?? '연결 중').join(', ')}</div>
+      )}
+    </div>
+  )
+}
+
 export default function App() {
   const [view, setView] = useState(viewFromHash)
 
@@ -56,7 +107,14 @@ export default function App() {
     return () => window.removeEventListener('hashchange', onHash)
   }, [])
 
-  const { Scene, camera, flat = false, hint } = VIEWS[view]
+  const { Scene, camera, flat = false, hint, net } = VIEWS[view]
+
+  // 2-7 화면에 있는 동안만 방에 접속한다
+  useEffect(() => {
+    if (net) joinRoom(ROOM_ID)
+    else leaveRoom()
+  }, [net])
+
   const ids = Object.keys(VIEWS)
 
   return (
@@ -72,12 +130,15 @@ export default function App() {
             <Tab key={id} id={id} view={view} />
           ))}
         </div>
-        <div style={{ display: 'flex', gap: 5 }}>
+        <div style={{ display: 'flex', gap: 5, alignItems: 'center', flexWrap: 'wrap' }}>
+          <span style={{ fontSize: 12, color: '#52606d' }}>보관 ·</span>
           {ids.filter((id) => VIEWS[id].minor).map((id) => (
             <Tab key={id} id={id} view={view} small />
           ))}
         </div>
       </nav>
+
+      {net && <NetPanel />}
 
       {hint && (
         <div

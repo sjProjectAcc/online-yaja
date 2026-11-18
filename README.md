@@ -1,8 +1,12 @@
 # 온라인 야자실
 
-2학년 층을 웹 3D로 옮긴 온라인 독서실. 설계와 결정 사항은 [세션요약파일.md](세션요약파일.md)에 있다.
+우리 학교 2학년 층을 웹 3D로 옮긴 온라인 독서실. 지금은 2-7반 파일럿을 만들고 있다.
 
-## 다른 기기에서 이어서 작업하기
+- 계획: [ROADMAP-2-7.md](ROADMAP-2-7.md)
+- 작업 안내(구조·규칙): [CLAUDE.md](CLAUDE.md)
+- 처음 설계(층 전체): [세션요약파일.md](세션요약파일.md)
+
+## 다른 컴퓨터에서 이어서 작업하기
 
 Node.js(LTS)와 Git이 필요하다.
 
@@ -10,23 +14,19 @@ Node.js(LTS)와 Git이 필요하다.
 git clone <이 저장소 주소>
 cd <저장소 폴더>/web
 npm install
+cp .env.example .env.local
 npm run dev
 ```
 
 브라우저에서 http://localhost:5173 을 연다.
 
-## 지금 범위
-
-2학년 층 전체가 주 화면이고, 2-7반 교실 화면은 디테일을 다듬는 용도로 같이 둔다. 창밖 풍경(운동장, 건너편 건물)은 두 화면이 같은 모델을 쓴다.
+`.env.local`에 Supabase 키를 넣으면 다른 기기와 연결되고, 비워 두면 같은 브라우저의 탭끼리만 연결되는 로컬 테스트 모드로 돈다.
 
 ## 구조
 
-- `web/` — 화면 (React + Vite + React Three Fiber)
-- `web/src/scenes/RoomScene.jsx` — 2-7 교실 화면 (`#room` 위에서 보기, `#roomwalk` 걸어 다니기)
-- `web/src/models/Classroom.jsx`, `ClassroomDetails.jsx` — 교실 모델과 세부 소품. 색은 `palette.js`, 코드로 그린 바닥·천장 무늬는 `proceduralTextures.js`
-- `web/src/map/classroom.json` — 교실 치수 (책상, 사물함, 문, 창문 등)
-- `web/src/scenes/FloorScene.jsx`, `web/src/map/floor.json` — 층 전체 (`#floor`, `#plan`, `#walk`)
-- `web/src/models/Outside.jsx` — 창밖 풍경 (운동장, 옹벽, 건너편 건물, 우리 건물 아래층)
-- `.github/workflows/deploy.yml` — `main`에 올리면 GitHub Pages로 자동 배포
+- 화면: React + Vite + React Three Fiber (`web/`)
+- 서버: Supabase (로그인, DB, P2P 연결 중개)
+- 실시간: 같은 반 사람끼리 WebRTC P2P로 아바타 위치·동작·착장을 주고받는다
+- 배포: `main`에 푸시하면 GitHub Pages로 자동 배포 (`.github/workflows/deploy.yml`)
 
 학교 사진은 저장소에 올리지 않는다 (`.gitignore` 참고).

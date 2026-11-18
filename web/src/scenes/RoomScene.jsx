@@ -1,4 +1,5 @@
-import { useMemo } from 'react'
+import { Suspense, useMemo, useRef } from 'react'
+import { useFrame } from '@react-three/fiber'
 import { OrbitControls, Text } from '@react-three/drei'
 import spec from '../map/classroom.json'
 import Classroom from '../models/Classroom'
@@ -8,6 +9,8 @@ import { terrazzoTexture, ceilingTileTexture } from '../models/proceduralTexture
 import floor from '../map/floor.json'
 import Outside from '../models/Outside'
 import WalkControls from './WalkControls'
+import { RemoteAvatar } from '../models/Avatar'
+import { useRoom, sendMyState } from '../net/room'
 
 // 지금 만드는 범위: 2-7반 교실 하나 + 그 앞 복도 구간.
 // 2-7은 B타입이라 칠판 -x, 사물함 +x, 복도 -z, 창문 +z 로 놓인다.
@@ -36,6 +39,38 @@ function ClassSign() {
       ))}
     </group>
   )
+}
+
+// 같은 방의 다른 사람들 (P2P로 받은 위치에 아바타를 그린다)
+function RemoteAvatars() {
+  const { peers } = useRoom()
+  return (
+    <Suspense fallback={null}>
+      {peers.map((p) => (
+        <RemoteAvatar key={p.id} id={p.id} profile={p.profile} />
+      ))}
+    </Suspense>
+  )
+}
+
+// 걷는 동안 내 위치·방향·동작을 P2P로 보낸다. 움직일 때 초당 10번, 서 있으면 2초마다 한 번.
+// (P2P는 서버 메시지 한도가 없어서 Supabase보다 자주 보내도 된다)
+function PublishMe() {
+  const last = useRef({ x: 0, z: 0, r: 0, sent: 0, moving: false })
+  useFrame(({ camera, clock }) => {
+    const now = clock.elapsedTime
+    const L = last.current
+    if (now - L.sent < 0.1) return
+    const x = camera.position.x
+    const z = camera.position.z
+    const r = camera.rotation.y + Math.PI // 카메라는 -z를 보고 아바타는 +z가 정면
+    const moved = Math.hypot(x - L.x, z - L.z) > 0.01
+    const turned = Math.abs(r - L.r) > 0.02
+    if (!moved && !turned && now - L.sent < 2 && !L.moving) return
+    sendMyState({ p: [x, 0, z], r, a: moved ? 'walk' : 'idle' })
+    Object.assign(L, { x, z, r, sent: now, moving: moved })
+  })
+  return null
 }
 
 export default function RoomScene({ walk = false }) {
@@ -85,8 +120,13 @@ export default function RoomScene({ walk = false }) {
         </>
       )}
 
+      <RemoteAvatars />
+
       {walk ? (
-        <WalkControls yaw={Math.PI} />
+        <>
+          <WalkControls yaw={Math.PI} />
+          <PublishMe />
+        </>
       ) : (
         <>
           <OrbitControls makeDefault target={[0, 0.8, -0.5]} maxPolarAngle={Math.PI / 2.02} minDistance={0.5} maxDistance={40} />

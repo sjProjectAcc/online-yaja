@@ -14,3 +14,7 @@ Thumbs.db
 평면도.jpg
 비상대피도.jpg
 web/public/textures/
+!.env.example
+
+# 다른 채팅에 올리려고 만든 내보내기 파일 (개발 소스 아님)
+온라인야자실_시뮬레이션.html
