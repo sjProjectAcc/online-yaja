@@ -37,8 +37,8 @@ npm run dev
 ```
 
 - 로컬 테스트 모드: 같은 브라우저에서 `#roomwalk` 탭을 두 개 열면 서로 P2P로 연결돼 상대 아바타가 보인다.
-- `main`에 푸시하면 GitHub Actions(`.github/workflows/deploy.yml`)가 GitHub Pages로 배포한다.
-  Supabase 키는 GitHub 저장소 Secrets(`VITE_SUPABASE_URL`, `VITE_SUPABASE_ANON_KEY`)로 넣어야 배포본에 들어간다.
+- 저장소: GitHub `sjProjectAcc/online-yaja` (비공개). 비공개 무료 저장소는 GitHub Pages를 못 써서 자동 배포는 꺼 두었다(`.github/workflows/deploy.yml`, 수동 실행만). 배포 방식은 아직 미정.
+- Supabase 키는 `.env.local`(로컬)과, 배포할 곳의 환경 변수(`VITE_SUPABASE_URL`, `VITE_SUPABASE_ANON_KEY`)에 넣는다.
 
 ## 지켜야 할 것
 
