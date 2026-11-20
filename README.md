@@ -27,6 +27,6 @@ npm run dev
 - 화면: React + Vite + React Three Fiber (`web/`)
 - 서버: Supabase (로그인, DB, P2P 연결 중개)
 - 실시간: 같은 반 사람끼리 WebRTC P2P로 아바타 위치·동작·착장을 주고받는다
-- 배포: 비공개 저장소라 GitHub Pages 자동 배포는 꺼 두었다. 배포 방식은 미정 (ROADMAP 10장)
+- 배포: GitHub Pages 자동 배포는 지금 꺼 두었다 (`.github/workflows/deploy.yml`의 push 두 줄 주석을 풀면 켜진다)
 
 학교 사진은 저장소에 올리지 않는다 (`.gitignore` 참고).
